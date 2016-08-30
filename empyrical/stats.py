@@ -43,17 +43,17 @@ ANNUALIZATION_FACTORS = {
 
 def _adjust_returns(returns, adjustment_factor):
     """
-    Returns a new pd.Series adjusted by adjustment_factor. Optimizes for the
-    case of adjustment_factor being 0
+    Returns a new pandas.Series adjusted by adjustment_factor. Optimizes for
+    the case of adjustment_factor being 0
 
     Parameters
     ----------
-    returns : pd.Series
-    adjustment_factor : series / float
+    returns : pandas.Series
+    adjustment_factor : pandas.Series / float
 
     Returns
     -------
-    pd.Series
+    pandas.Series
     """
     if isinstance(adjustment_factor, (float, int)) and adjustment_factor == 0:
         return returns.copy()
@@ -70,10 +70,7 @@ def annualization_factor(period, annualization):
     period : str, optional
         Defines the periodicity of the 'returns' data for purposes of
         annualizing. Value ignored if `annualization` parameter is specified.
-        Defaults are:
-            'monthly':12
-            'weekly': 52
-            'daily': 252
+        See full explanation in :func:`~empyrical.stats.annual_return`.
     annualization : int, optional
         Used to suppress default values available in `period` to convert
         returns into annual returns. Value should be the annual frequency of
@@ -105,16 +102,16 @@ def cum_returns(returns, starting_value=0):
 
     Parameters
     ----------
-    returns : pd.Series
+    returns : pandas.Series
         Returns of the strategy as a percentage, noncumulative.
-         - Time series with decimal returns.
-         - Example:
+        Time series with decimal returns.
+        Example::
             2015-07-16    -0.012143
             2015-07-17    0.045350
             2015-07-20    0.030957
             2015-07-21    0.004902.
     starting_value : float, optional
-       The starting returns.
+        The starting returns.
 
     Returns
     -------
@@ -128,7 +125,6 @@ def cum_returns(returns, starting_value=0):
     PI((1+r_i)) - 1 = exp(ln(PI(1+r_i)))     # x = exp(ln(x))
                     = exp(SIGMA(ln(1+r_i))   # ln(a*b) = ln(a) + ln(b)
     """
-
     # df_price.pct_change() adds a nan in first position, we can use
     # that to have cum_logarithmic_returns start at the origin so that
     # df_cum.iloc[0] == starting_value
@@ -156,15 +152,15 @@ def aggregate_returns(returns, convert_to):
 
     Parameters
     ----------
-    returns : pd.Series
-       Daily returns of the strategy, noncumulative.
-        - See full explanation in :func:`~empyrical.stats.cum_returns`.
+    returns : pandas.Series
+        Daily returns of the strategy, noncumulative.
+        See full explanation in :func:`~empyrical.stats.cum_returns`.
     convert_to : str
         Can be 'weekly', 'monthly', or 'yearly'.
 
     Returns
     -------
-    pd.Series
+    pandas.Series
         Aggregated returns.
     """
 
@@ -191,9 +187,9 @@ def max_drawdown(returns):
 
     Parameters
     ----------
-    returns : pd.Series
+    returns : pandas.Series
         Daily returns of the strategy, noncumulative.
-        - See full explanation in :func:`~empyrical.stats.cum_returns`.
+        See full explanation in :func:`~empyrical.stats.cum_returns`.
 
     Returns
     -------
@@ -218,16 +214,16 @@ def annual_return(returns, period=DAILY, annualization=None):
 
     Parameters
     ----------
-    returns : pd.Series
+    returns : pandas.Series
         Periodic returns of the strategy, noncumulative.
-        - See full explanation in :func:`~empyrical.stats.cum_returns`.
+        See full explanation in :func:`~empyrical.stats.cum_returns`.
     period : str, optional
         Defines the periodicity of the 'returns' data for purposes of
         annualizing. Value ignored if `annualization` parameter is specified.
-        Defaults are:
-            'monthly':12
-            'weekly': 52
-            'daily': 252
+        Defaults are::
+            {'monthly':12
+             'weekly': 52
+             'daily': 252}
     annualization : int, optional
         Used to suppress default values available in `period` to convert
         returns into annual returns. Value should be the annual frequency of
@@ -237,6 +233,7 @@ def annual_return(returns, period=DAILY, annualization=None):
     -------
     float
         Annual Return as CAGR (Compounded Annual Growth Rate).
+
     """
 
     if len(returns) < 1:
@@ -255,20 +252,18 @@ def annual_return(returns, period=DAILY, annualization=None):
 
 def annual_volatility(returns, period=DAILY, alpha=2.0,
                       annualization=None):
-    """Determines the annual volatility of a strategy.
+    """
+    Determines the annual volatility of a strategy.
 
     Parameters
     ----------
-    returns : pd.Series
+    returns : pandas.Series
         Periodic returns of the strategy, noncumulative.
-        - See full explanation in :func:`~empyrical.stats.cum_returns`.
+        See full explanation in :func:`~empyrical.stats.cum_returns`.
     period : str, optional
         Defines the periodicity of the 'returns' data for purposes of
         annualizing. Value ignored if `annualization` parameter is specified.
-        Defaults are:
-            'monthly':12
-            'weekly': 52
-            'daily': 252
+        See full explanation in :func:`~empyrical.stats.annual_return`.
     alpha : float, optional
         Scaling relation (Levy stability exponent).
     annualization : int, optional
@@ -298,20 +293,18 @@ def calmar_ratio(returns, period=DAILY, annualization=None):
 
     Parameters
     ----------
-    returns : pd.Series
+    returns : pandas.Series
         Daily returns of the strategy, noncumulative.
-        - See full explanation in :func:`~empyrical.stats.cum_returns`.
+        See full explanation in :func:`~empyrical.stats.cum_returns`.
     period : str, optional
         Defines the periodicity of the 'returns' data for purposes of
         annualizing. Value ignored if `annualization` parameter is specified.
-        Defaults are:
-            'monthly':12
-            'weekly': 52
-            'daily': 252
+        See full explanation in :func:`~empyrical.stats.annual_return`.
     annualization : int, optional
         Used to suppress default values available in `period` to convert
         returns into annual returns. Value should be the annual frequency of
         `returns`.
+
 
     Returns
     -------
@@ -323,7 +316,6 @@ def calmar_ratio(returns, period=DAILY, annualization=None):
     -----
     See https://en.wikipedia.org/wiki/Calmar_ratio for more details.
     """
-
 
     max_dd = max_drawdown(returns=returns)
     if max_dd < 0:
@@ -347,9 +339,9 @@ def omega_ratio(returns, risk_free=0.0, required_return=0.0,
 
     Parameters
     ----------
-    returns : pd.Series
+    returns : pandas.Series
         Daily returns of the strategy, noncumulative.
-        - See full explanation in :func:`~empyrical.stats.cum_returns`.
+        See full explanation in :func:`~empyrical.stats.cum_returns`.
     risk_free : int, float
         Constant risk-free return throughout the period
     required_return : float, optional
@@ -370,6 +362,7 @@ def omega_ratio(returns, risk_free=0.0, required_return=0.0,
     Note
     -----
     See https://en.wikipedia.org/wiki/Omega_ratio for more details.
+
     """
 
     if len(returns) < 2:
@@ -400,18 +393,15 @@ def sharpe_ratio(returns, risk_free=0, period=DAILY, annualization=None):
 
     Parameters
     ----------
-    returns : pd.Series
+    returns : pandas.Series
         Daily returns of the strategy, noncumulative.
-        - See full explanation in :func:`~empyrical.stats.cum_returns`.
+        See full explanation in :func:`~empyrical.stats.cum_returns`.
     risk_free : int, float
         Constant risk-free return throughout the period.
     period : str, optional
         Defines the periodicity of the 'returns' data for purposes of
         annualizing. Value ignored if `annualization` parameter is specified.
-        Defaults are:
-            'monthly':12
-            'weekly': 52
-            'daily': 252
+        See full explanation in :func:`~empyrical.stats.annual_return`.
     annualization : int, optional
         Used to suppress default values available in `period` to convert
         returns into annual returns. Value should be the annual frequency of
@@ -421,14 +411,14 @@ def sharpe_ratio(returns, risk_free=0, period=DAILY, annualization=None):
     -------
     float
         Sharpe ratio.
-    np.nan
+    numpy.nan
         If insufficient length of returns or if if adjusted returns are 0.
 
     Note
     -----
     See https://en.wikipedia.org/wiki/Sharpe_ratio for more details.
-    """
 
+    """
 
     if len(returns) < 1:
         return np.nan
@@ -451,18 +441,15 @@ def sortino_ratio(returns, required_return=0, period=DAILY,
 
     Parameters
     ----------
-    returns : pd.Series or pd.DataFrame
+    returns : pandas.Series or pd.DataFrame
         Daily returns of the strategy, noncumulative.
-        - See full explanation in :func:`~empyrical.stats.cum_returns`.
+        See full explanation in :func:`~empyrical.stats.cum_returns`.
     required_return: float / series
         minimum acceptable return
     period : str, optional
         Defines the periodicity of the 'returns' data for purposes of
         annualizing. Value ignored if `annualization` parameter is specified.
-        Defaults are:
-            'monthly':12
-            'weekly': 52
-            'daily': 252
+        See full explanation in :func:`~empyrical.stats.annual_return`.
     annualization : int, optional
         Used to suppress default values available in `period` to convert
         returns into annual returns. Value should be the annual frequency of
@@ -473,11 +460,12 @@ def sortino_ratio(returns, required_return=0, period=DAILY,
 
     Returns
     -------
-    depends on input type
-    series ==> float
-    DataFrame ==> pd.Series
+    float or pandas.Series
+
         Annualized Sortino ratio.
+
     """
+
     if len(returns) < 2:
         return np.nan
 
@@ -499,22 +487,19 @@ def sortino_ratio(returns, required_return=0, period=DAILY,
 def downside_risk(returns, required_return=0, period=DAILY,
                   annualization=None):
     """
-    Determines the downside deviation below a threshold.
+    Determines the downside deviation below a threshold
 
     Parameters
     ----------
-    returns : pd.Series or pd.DataFrame
+    returns : pandas.Series or pd.DataFrame
         Daily returns of the strategy, noncumulative.
-        - See full explanation in :func:`~empyrical.stats.cum_returns`.
+        See full explanation in :func:`~empyrical.stats.cum_returns`.
     required_return: float / series
         minimum acceptable return
     period : str, optional
         Defines the periodicity of the 'returns' data for purposes of
         annualizing. Value ignored if `annualization` parameter is specified.
-        Defaults are:
-            'monthly':12
-            'weekly': 52
-            'daily': 252
+        See full explanation in :func:`~empyrical.stats.annual_return`.
     annualization : int, optional
         Used to suppress default values available in `period` to convert
         returns into annual returns. Value should be the annual frequency of
@@ -522,10 +507,11 @@ def downside_risk(returns, required_return=0, period=DAILY,
 
     Returns
     -------
-    depends on input type
-    series ==> float
-    DataFrame ==> pd.Series
+    float
+    pandas.Series
+
         Annualized downside deviation
+
     """
 
     if len(returns) < 1:
@@ -550,9 +536,9 @@ def information_ratio(returns, factor_returns):
 
     Parameters
     ----------
-    returns : pd.Series or pd.DataFrame
+    returns : pandas.Series or pd.DataFrame
         Daily returns of the strategy, noncumulative.
-        - See full explanation in :func:`~empyrical.stats.cum_returns`.
+        See full explanation in :func:`~empyrical.stats.cum_returns`.
     factor_returns: float / series
         Benchmark return to compare returns against.
 
@@ -560,9 +546,11 @@ def information_ratio(returns, factor_returns):
     -------
     float
         The information ratio.
+
     Note
     -----
     See https://en.wikipedia.org/wiki/information_ratio for more details.
+
     """
     if len(returns) < 2:
         return np.nan
@@ -582,23 +570,20 @@ def alpha_beta(returns, factor_returns, risk_free=0.0, period=DAILY,
 
     Parameters
     ----------
-    returns : pd.Series
+    returns : pandas.Series
         Daily returns of the strategy, noncumulative.
-        - See full explanation in :func:`~empyrical.stats.cum_returns`.
-    factor_returns : pd.Series
-         Daily noncumulative returns of the factor to which beta is
-         computed. Usually a benchmark such as the market.
-         - This is in the same style as returns.
+        See full explanation in :func:`~empyrical.stats.cum_returns`.
+    factor_returns : pandas.Series
+        Daily noncumulative returns of the factor to which beta is
+        computed. Usually a benchmark such as the market.
+        This is in the same style as returns.
     risk_free : int, float, optional
         Constant risk-free return throughout the period. For example, the
         interest rate on a three month us treasury bill.
     period : str, optional
         Defines the periodicity of the 'returns' data for purposes of
         annualizing. Value ignored if `annualization` parameter is specified.
-        Defaults are:
-            'monthly':12
-            'weekly': 52
-            'daily': 252
+        See full explanation in :func:`~empyrical.stats.annual_return`.
     annualization : int, optional
         Used to suppress default values available in `period` to convert
         returns into annual returns. Value should be the annual frequency of
@@ -610,8 +595,8 @@ def alpha_beta(returns, factor_returns, risk_free=0.0, period=DAILY,
         Alpha.
     float
         Beta.
-    """
 
+    """
     b = beta(returns, factor_returns, risk_free)
     a = alpha(returns, factor_returns, risk_free, period, annualization,
               _beta=b)
@@ -624,28 +609,25 @@ def alpha(returns, factor_returns, risk_free=0.0, period=DAILY,
 
     Parameters
     ----------
-    returns : pd.Series
+    returns : pandas.Series
         Daily returns of the strategy, noncumulative.
-        - See full explanation in :func:`~empyrical.stats.cum_returns`.
-    factor_returns : pd.Series
-         Daily noncumulative returns of the factor to which beta is
-         computed. Usually a benchmark such as the market.
-         - This is in the same style as returns.
+        See full explanation in :func:`~empyrical.stats.cum_returns`.
+    factor_returns : pandas.Series
+        Daily noncumulative returns of the factor to which beta is
+        computed. Usually a benchmark such as the market.
+        This is in the same style as returns.
     risk_free : int, float, optional
         Constant risk-free return throughout the period. For example, the
         interest rate on a three month us treasury bill.
     period : str, optional
         Defines the periodicity of the 'returns' data for purposes of
         annualizing. Value ignored if `annualization` parameter is specified.
-        Defaults are:
-            'monthly':12
-            'weekly': 52
-            'daily': 252
+        See full explanation in :func:`~empyrical.stats.annual_return`.
     annualization : int, optional
         Used to suppress default values available in `period` to convert
         returns into annual returns. Value should be the annual frequency of
         `returns`.
-        - See full explanation in :func:`~empyrical.stats.annual_return`.
+        See full explanation in :func:`~empyrical.stats.annual_return`.
     _beta : float, optional
         The beta for the given inputs, if already known. Will be calculated
         internally if not provided.
@@ -655,7 +637,6 @@ def alpha(returns, factor_returns, risk_free=0.0, period=DAILY,
     float
         Alpha.
     """
-
     if len(returns) < 2:
         return np.nan
 
@@ -678,13 +659,13 @@ def beta(returns, factor_returns, risk_free=0.0):
 
     Parameters
     ----------
-    returns : pd.Series
+    returns : pandas.Series
         Daily returns of the strategy, noncumulative.
-        - See full explanation in :func:`~empyrical.stats.cum_returns`.
-    factor_returns : pd.Series
-         Daily noncumulative returns of the factor to which beta is
-         computed. Usually a benchmark such as the market.
-         - This is in the same style as returns.
+        See full explanation in :func:`~empyrical.stats.cum_returns`.
+    factor_returns : pandas.Series
+        Daily noncumulative returns of the factor to which beta is
+        computed. Usually a benchmark such as the market.
+        This is in the same style as returns.
     risk_free : int, float, optional
         Constant risk-free return throughout the period. For example, the
         interest rate on a three month us treasury bill.
@@ -703,7 +684,10 @@ def beta(returns, factor_returns, risk_free=0.0):
     if len(joint) < 2:
         return np.nan
 
-    return joint.corr().iloc[0, 1]
+    if np.absolute(joint.var().iloc[1]) < 1.0e-30:
+        return np.nan
+
+    return np.cov(joint.values.T, ddof=0)[0, 1] / np.var(joint.iloc[:, 1])
 
 
 def stability_of_timeseries(returns):
@@ -713,16 +697,16 @@ def stability_of_timeseries(returns):
 
     Parameters
     ----------
-    returns : pd.Series
+    returns : pandas.Series
         Daily returns of the strategy, noncumulative.
-        - See full explanation in :func:`~empyrical.stats.cum_returns`.
+        See full explanation in :func:`~empyrical.stats.cum_returns`.
 
     Returns
     -------
     float
         R-squared.
-    """
 
+    """
     if len(returns) < 2:
         return np.nan
 
@@ -737,19 +721,21 @@ def stability_of_timeseries(returns):
 
 def tail_ratio(returns):
     """Determines the ratio between the right (95%) and left tail (5%).
+
     For example, a ratio of 0.25 means that losses are four times
     as bad as profits.
 
     Parameters
     ----------
-    returns : pd.Series
+    returns : pandas.Series
         Daily returns of the strategy, noncumulative.
-         - See full explanation in :func:`~empyrical.stats.cum_returns`.
+        See full explanation in :func:`~empyrical.stats.cum_returns`.
 
     Returns
     -------
     float
         tail ratio
+
     """
 
     if len(returns) < 1:
@@ -770,21 +756,18 @@ def cagr(returns, period=DAILY, annualization=None):
 
     Parameters
     ----------
-    returns : pd.Series
+    returns : pandas.Series
         Daily returns of the strategy, noncumulative.
-        - See full explanation in :func:`~empyrical.stats.cum_returns`.
+        See full explanation in :func:`~empyrical.stats.cum_returns`.
     period : str, optional
         Defines the periodicity of the 'returns' data for purposes of
         annualizing. Value ignored if `annualization` parameter is specified.
-        Defaults are:
-            'monthly':12
-            'weekly': 52
-            'daily': 252
+        See full explanation in :func:`~empyrical.stats.annual_return`.
     annualization : int, optional
         Used to suppress default values available in `period` to convert
         returns into annual returns. Value should be the annual frequency of
         `returns`.
-        - See full explanation in :func:`~empyrical.stats.annual_return`.
+        See full explanation in :func:`~empyrical.stats.annual_return`.
 
     Returns
     -------
